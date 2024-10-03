@@ -46,18 +46,18 @@ class DashboardView(TemplateView):
         data = super().get_context_data(*args, **kwargs)
         data['now'] = timezone.now()
         # Sources
-        data['num_sources'] = Source.objects.all().count()
+        data['num_sources'] = Source.objects.count()
         data['num_video_sources'] = Source.objects.filter(
             ~Q(source_resolution=Source.SOURCE_RESOLUTION_AUDIO)
         ).count()
         data['num_audio_sources'] = data['num_sources'] - data['num_video_sources']
         data['num_failed_sources'] = Source.objects.filter(has_failed=True).count()
         # Media
-        data['num_media'] = Media.objects.all().count()
+        data['num_media'] = Media.objects.count()
         data['num_downloaded_media'] = Media.objects.filter(downloaded=True).count()
         # Tasks
-        data['num_tasks'] = Task.objects.all().count()
-        data['num_completed_tasks'] = CompletedTask.objects.all().count()
+        data['num_tasks'] = Task.objects.count()
+        data['num_completed_tasks'] = CompletedTask.objects.count()
         # Disk usage
         disk_usage = Media.objects.filter(
             downloaded=True, downloaded_filesize__isnull=False
@@ -833,9 +833,6 @@ class CompletedTasksView(ListView):
             except Source.DoesNotExist:
                 self.filter_source = None
         return super().dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        return CompletedTask.objects.all().order_by('-run_at')
 
     def get_queryset(self):
         if self.filter_source:
